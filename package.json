@@ -1,0 +1,16 @@
+{
+  "name": "kickabot",
+  "version": "1.0.0",
+  "description": "Telegram Bot providing football stats",
+  "main": "server.js",
+  "dependencies": {
+    "node-telegram-bot": "^0.1.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Gary McPherson",
+  "license": "ISC"
+}
