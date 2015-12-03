@@ -114,8 +114,7 @@ var bot = new Bot({
             'qs': qs,
             'message': message,
             'bot': bot,
-            'callback': ui.renderTable
-        });
+        }, ui.renderTable);
     })
     /*
     |---------------------------------|
@@ -136,9 +135,8 @@ var bot = new Bot({
             'qs': qs,
             'message': message,
             'bot': bot,
-            'callback': ui.renderTeamStats,
             'args': args
-        });
+        }, ui.renderTeamStats);
     })
     .start();
 
