@@ -4,6 +4,7 @@
   "description": "Telegram Bot providing football stats",
   "main": "server.js",
   "dependencies": {
+    "lodash": "^3.10.1",
     "node-telegram-bot": "^0.1.6"
   },
   "devDependencies": {},

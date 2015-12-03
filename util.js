@@ -1,88 +1,52 @@
+//Load the request module
+var request = require('request');
+
+// npm modules
+var _ = require('lodash');
+
 module.exports = {
-  GetFeed: function (name) {
-    var feed = require('./data/' + name + '.json');
+    getFeed: function(options) {
+        var feed;
+        var apiKey = 'f1ed2f61-7f06-86be-730afbc12309';
+        var url = String.format('http://football-api.com/api/?Action={0}&APIKey={1}', options.name, apiKey);
 
-    return feed;
-  },
-  GetDate: function (formattedDate) {
-      var pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
-      var date = new Date(formattedDate.replace(pattern, '$3-$2-$1T00:00:00Z'));
+        //feed = require('./data/' + name + '.json');
+        //callback(null, feed, message);
+        if (options.qs) {
+            url += options.qs;
+        }
 
-      return date;
-  },
-  GetFullName: function(shortName) {
-      return shortName;
-  },
-  GetShortName: function(name) {
-      var shortName;
+        request(url, function(error, response, body) {
+            console.log('Requested ' + url);
+            //Check for error
+            if (error) {
+                return console.log(String.format('Error while requesting {0}:', url), error);
+            }
 
-      switch (name) {
-          case 'Crystal Palace':
-              shortName = 'C. Palace';
-              break;
-          case 'Manchester United':
-              shortName = 'Man. United';
-              break;
-          case 'Manchester City':
-              shortName = 'Man. City';
-              break;
-          case 'Newcastle Utd':
-              shortName = 'Newcastle';
-              break;
-          default:
-              shortName = name;
-              break;
-      }
+            //Check for right status code
+            if (response.statusCode !== 200) {
+                return console.log('Invalid Status Code Returned:', response.statusCode);
+            }
 
-      return shortName;
-  },
-  // Takes an array of column values and formats into a
-  // fixed-width table row
-  WriteRow: function(columns) {
-      var values = [];
+            //All is good. Save the body
+            feed = JSON.parse(body); // Show the response from the API.
+            var err = typeof(feed) !== 'object' ?
+                new Error(String.format('No feed available at {0}', url)) :
+                null;
 
-    //   Object.keys(columns).forEach(function(key, index) {
-    //       console.log(String.format('Key: {0}, value: {1}', key, this[key]));
-    //       var width = this[key];
-    //       var column = String.format('| {0} ', pad(Array(width + 1).join(' '),
-    //           key, false));
-    //   }, columns);
-      for (var i = 0; i < columns.length; i++) {
-          var width = columns[i].width;
-          var column = String.format('| {0} ', pad(Array(width + 1).join(' '),
-              columns[i].title, false));
+            if (options.callback && typeof(options.callback) === 'function') {
+                options.callback(err, feed, options.message, options.bot, options.args);
+            }
+        });
+    },
+    mergeArrayValues: function(sourceArr, destinationArr, prop) {
+        _.each(sourceArr, function(sourceArrObj, index) {
+            var arr1obj = destinationArr.length > index ? destinationArr[index] : null;
 
-          values.push(column);
-      }
-      values.push('|\n');
-
-      return values.join('');
-  },
-  WriteDivider: function(width){
-      var divider = String.format('|{0}|\n', pad(Array(width + 1).join('-')));
-
-      return divider;
-  }
-};
-
-// Private function. Adds padding to make text a minimum width
-var pad = function(pad, str, padLeft) {
-    if (typeof str === 'undefined')
-        return pad;
-
-    var length = pad.length > str.length ? pad.length : str.length;
-    if (padLeft) {
-        return (pad + str).slice(-length);
-    } else {
-        return (str + pad).substring(0, length);
+            //If the object exists, extend it with the new value from sourceArr
+            if (arr1obj) {
+                arr1obj[prop] = sourceArrObj;
+            }
+        });
     }
 };
-
-if (!String.format) {
-    String.format = function(format) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return format.replace(/{(\d+)}/g, function(match, number) {
-            return typeof args[number] != 'undefined' ? args[number] : match;
-        });
-    };
-}
