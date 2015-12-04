@@ -11,10 +11,10 @@ var self = module.exports = {
 
         return date;
     },
-    getFullName: function getFullName(shortName) {
+    getFullName: function getFullName(name) {
         var fullName;
-
-        switch ((shortName +'').toLowerCase()) {
+        var shortName = name.join(' ');
+        switch (shortName.toLowerCase()) {
             case 'villa':
                 fullName = 'Aston Villa';
                 break;
@@ -24,11 +24,13 @@ var self = module.exports = {
                 break;
             case 'man. united':
             case 'man united':
+            case 'man. u':
             case 'man u':
                 fullName = 'Manchester United';
                 break;
             case 'man. city':
             case 'man city':
+            case 'man. c':
             case 'man c':
                 fullName = 'Manchester City';
                 break;
@@ -42,7 +44,7 @@ var self = module.exports = {
                 fullName = 'Tottenham';
                 break;
             default:
-                fullName = shortName;
+                fullName = util.capitalise(shortName);
                 break;
         }
 
@@ -71,9 +73,37 @@ var self = module.exports = {
 
         return shortName;
     },
-    renderTeamStats: function renderTeamStats(error, feed, message, bot, args) {
+    renderFixtures: function renderFixtures(error, feed, callback) {
+        var today = util.today();
+        //var today = new Date('2015-09-19T00:00:00Z');
+        var matches = feed.matches.filter(function(el) {
+            return self.getDate(el.match_formatted_date) >= today;
+        });
+        var buffer = [];
+        var currentDate = new Date(1970, 0, 1);
+
+        for (var i = 0; i < matches.length; i++) {
+            var match = matches[i];
+            var matchDate = self.getDate(match.match_formatted_date);
+            if (matchDate > currentDate) {
+                if (i > 0)
+                    buffer.push('\r\n');
+
+                buffer.push(match.match_date + '\r\n');
+                currentDate = matchDate;
+            }
+            buffer.push(match.match_localteam_name + ' vs ' +
+                match.match_visitorteam_name + ', ' + match.match_time + ' [' +
+                match.match_id + ']' + '\r\n');
+        }
+
+        if(typeof(callback) === 'function') {
+            callback(null, buffer.join(''));
+        }
+    },
+    renderTeamStats: function renderTeamStats(error, feed, teamName, callback) {
         var standings = feed.teams.filter(function(el) {
-            return self.getFullName(args) == el.stand_team_name;
+            return el.stand_team_name == teamName;
         });
 
         // We couldn't recognise the provided team name
@@ -165,13 +195,9 @@ var self = module.exports = {
         ], cells, 'text');
         buffer.push(self.writeRow(cells));
         buffer.push(lastDivider);
-        bot.sendMessage({
-            chat_id: message.chat.id,
-            text: buffer.join(''),
-            parse_mode: 'Markdown'
-        });
+        callback(null, buffer.join(''));
     },
-    renderTable: function renderTable(error, feed, message, bot) {
+    renderTable: function renderTable(error, feed, callback) {
         //Check for error
         if (error) {
             return console.log('Error in renderTable function', error);
@@ -233,11 +259,7 @@ var self = module.exports = {
         var mark = divider.length - 2;
         var lastDivider = divider.slice(0, mark) + '```' + divider.slice(mark);
         buffer.push(lastDivider);
-        bot.sendMessage({
-            chat_id: message.chat.id,
-            text: buffer.join(''),
-            parse_mode: 'Markdown'
-        });
+        callback(null, buffer.join(''));
     },
     // Takes an array of column values and formats into a
     // fixed-width table row

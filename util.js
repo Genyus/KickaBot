@@ -13,6 +13,16 @@ var memoryCache = cacheManager.caching({
 });
 
 module.exports = {
+    capitalise: function(input) {
+        var arr = input.split(/\s/);
+
+        _.each(arr, function(word, index) {
+            arr[index] = word.substr(0,1).toUpperCase() +
+                     (word.length > 1 ? word.substr(1).toLowerCase() : '');
+        });
+
+        return arr.join(' ');
+    },
     getFeed: function(options, callback) {
         var parts = [
             String.format('name:{0}', options.name),
@@ -25,7 +35,7 @@ module.exports = {
             loadFeed(options, cacheCallback);
         }, function(err, feed) {
             //FIXME: Add secondary filesystem cache check here
-            callback(err, feed, options.message, options.bot, options.args);
+            callback(err, feed, options.args);
         });
     },
     mergeArrayValues: function(sourceArr, destinationArr, prop) {
@@ -37,6 +47,10 @@ module.exports = {
                 destinationObj[prop] = sourceArrObj;
             }
         });
+    },
+    today: function() {
+        var now = new Date();
+        return new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0);
     }
 };
 
