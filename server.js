@@ -80,6 +80,50 @@ var bot = new Bot({
     .on('error', function(message) {
         console.log(message);
     })
+    /*
+    |---------------------------|
+    | Monday, 07 Dec 2015       |
+    |===========================|
+    | Everton v C. Palace       |
+    | 20:00             2151488 |
+    |===========================|
+    | Saturday, 12 Dec 2015     |
+    |===========================|
+    | Norwich v Everton         |
+    | 12:45             2152438 |
+    |---------------------------|
+    | C. Palace v Southampton   |
+    | 15:00             2152439 |
+    |---------------------------|
+    | Man. City v Swansea       |
+    | 15:00             2152440 |
+    |---------------------------|
+    | Sunderland v Watford      |
+    | 15:00             2152441 |
+    |---------------------------|
+    | West Ham v Stoke City     |
+    | 15:00             2152442 |
+    |---------------------------|
+    | Bournemouth v Man. United |
+    | 17:30             2152443 |
+    |===========================|
+    | Sunday, 13 Dec 2015       |
+    |===========================|
+    | Aston Villa v Arsenal     |
+    | 13:30             2152744 |
+    |---------------------------|
+    | Liverpool v West Brom     |
+    | 16:00             2152745 |
+    |---------------------------|
+    | Tottenham v Newcastle     |
+    | 16:00             2152746 |
+    |===========================|
+    | Monday, 14 Dec 2015       |
+    |===========================|
+    | Leicester v Chelsea       |
+    | 20:00             2152747 |
+    |---------------------------|
+    */
     .on('fixtures', function(message, args) {
         var days = 7;
         var today = util.today();

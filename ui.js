@@ -19,6 +19,7 @@ var self = module.exports = {
                 fullName = 'Aston Villa';
                 break;
             case 'c. palace':
+            case 'c palace':
             case 'palace':
                 fullName = 'Crystal Palace';
                 break;
@@ -100,6 +101,70 @@ var self = module.exports = {
         if(typeof(callback) === 'function') {
             callback(null, buffer.join(''));
         }
+    },
+    renderTable: function renderTable(error, feed, callback) {
+        //Check for error
+        if (error) {
+            return console.log('Error in renderTable function', error);
+        }
+
+        var standings = feed.teams.filter(function(el) {
+            return +(el.stand_team_id) !== 0;
+        });
+        // Markdown code blocks require a space after the opening block and a
+        // non-whitespace character after the closing block
+        var width = 35;
+        var divider = self.writeDivider(width);
+        var headers = [{
+            'text': '#',
+            'width': 2
+        }, {
+            'text': 'Team',
+            'width': 11
+        }, {
+            'text': 'P',
+            'width': 2
+        }, {
+            'text': 'GD',
+            'width': 3
+        }, {
+            'text': 'Pts',
+            'width': 3
+        }];
+        var head = String.format('``` {0}{1}', divider, self.writeRow(headers));
+        var buffer = [head];
+        var currentDesc = '';
+
+        for (var i = 0; i < standings.length; i++) {
+            var standing = standings[i];
+            var standingDesc = standing.stand_desc;
+            var columns = [{
+                'text': standing.stand_position,
+                'width': 2
+            }, {
+                'text': self.getShortName(standing.stand_team_name),
+                'width': 11
+            }, {
+                'text': standing.stand_home_gp,
+                'width': 2
+            }, {
+                'text': standing.stand_gd,
+                'width': 3
+            }, {
+                'text': standing.stand_points,
+                'width': 3
+            }];
+
+            if (currentDesc !== standingDesc && i != 3) {
+                buffer.push(divider);
+                currentDesc = standingDesc;
+            }
+            buffer.push(self.writeRow(columns));
+        }
+        var mark = divider.length - 2;
+        var lastDivider = divider.slice(0, mark) + '```' + divider.slice(mark);
+        buffer.push(lastDivider);
+        callback(null, buffer.join(''));
     },
     renderTeamStats: function renderTeamStats(error, feed, teamName, callback) {
         var standings = feed.teams.filter(function(el) {
@@ -197,69 +262,10 @@ var self = module.exports = {
         buffer.push(lastDivider);
         callback(null, buffer.join(''));
     },
-    renderTable: function renderTable(error, feed, callback) {
-        //Check for error
-        if (error) {
-            return console.log('Error in renderTable function', error);
-        }
+    writeDivider: function writeDivider(width) {
+        var divider = String.format('|{0}|\n', pad(Array(width + 1).join('-')));
 
-        var standings = feed.teams.filter(function(el) {
-            return +(el.stand_team_id) !== 0;
-        });
-        // Markdown code blocks require a space after the opening block and a
-        // non-whitespace character after the closing block
-        var width = 35;
-        var divider = self.writeDivider(width);
-        var headers = [{
-            'text': '#',
-            'width': 2
-        }, {
-            'text': 'Team',
-            'width': 11
-        }, {
-            'text': 'P',
-            'width': 2
-        }, {
-            'text': 'GD',
-            'width': 3
-        }, {
-            'text': 'Pts',
-            'width': 3
-        }];
-        var head = String.format('``` {0}{1}', divider, self.writeRow(headers));
-        var buffer = [head];
-        var currentDesc = '';
-
-        for (var i = 0; i < standings.length; i++) {
-            var standing = standings[i];
-            var standingDesc = standing.stand_desc;
-            var columns = [{
-                'text': standing.stand_position,
-                'width': 2
-            }, {
-                'text': self.getShortName(standing.stand_team_name),
-                'width': 11
-            }, {
-                'text': standing.stand_home_gp,
-                'width': 2
-            }, {
-                'text': standing.stand_gd,
-                'width': 3
-            }, {
-                'text': standing.stand_points,
-                'width': 3
-            }];
-
-            if (currentDesc !== standingDesc && i != 3) {
-                buffer.push(divider);
-                currentDesc = standingDesc;
-            }
-            buffer.push(self.writeRow(columns));
-        }
-        var mark = divider.length - 2;
-        var lastDivider = divider.slice(0, mark) + '```' + divider.slice(mark);
-        buffer.push(lastDivider);
-        callback(null, buffer.join(''));
+        return divider;
     },
     // Takes an array of column values and formats into a
     // fixed-width table row
@@ -282,11 +288,6 @@ var self = module.exports = {
         values.push('|\n');
 
         return values.join('');
-    },
-    writeDivider: function writeDivider(width) {
-        var divider = String.format('|{0}|\n', pad(Array(width + 1).join('-')));
-
-        return divider;
     }
 };
 
