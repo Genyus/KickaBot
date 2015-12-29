@@ -2,6 +2,7 @@
   "name": "kickabot",
   "version": "1.0.0",
   "description": "Telegram Bot providing football stats",
+  "private": true,
   "main": "server.js",
   "dependencies": {
     "cache-manager": "^1.2.2",
@@ -16,4 +17,9 @@
   },
   "author": "Gary McPherson",
   "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Genyus/KickaBot.git"
+  }
 }
