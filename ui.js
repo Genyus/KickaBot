@@ -11,6 +11,11 @@ var self = module.exports = {
 
         return date;
     },
+    /**
+     * Returns the full name of a football team where a shortened version may have been input
+     * @param  {string} name The input team name
+     * @return {string}      The full team name
+     */
     getFullName: function getFullName(name) {
         var fullName;
         var shortName = name.join(' ');
@@ -51,6 +56,11 @@ var self = module.exports = {
 
         return fullName;
     },
+    /**
+     * Returns a shortened team name for rendering purposes
+     * @param  {string} name The full team name
+     * @return {string}      If defined, the shortened team name, otherwise the full team name
+     */
     getShortName: function getShortName(name) {
         var shortName;
 
@@ -74,6 +84,56 @@ var self = module.exports = {
 
         return shortName;
     },
+    /**
+     * Renders a table of upcoming fixtures:
+     * |---------------------------|
+     * | Monday, 07 Dec 2015       |
+     * |===========================|
+     * | Everton v C. Palace       |
+     * | 20:00             2151488 |
+     * |===========================|
+     * | Saturday, 12 Dec 2015     |
+     * |===========================|
+     * | Norwich v Everton         |
+     * | 12:45             2152438 |
+     * |---------------------------|
+     * | C. Palace v Southampton   |
+     * | 15:00             2152439 |
+     * |---------------------------|
+     * | Man. City v Swansea       |
+     * | 15:00             2152440 |
+     * |---------------------------|
+     * | Sunderland v Watford      |
+     * | 15:00             2152441 |
+     * |---------------------------|
+     * | West Ham v Stoke City     |
+     * | 15:00             2152442 |
+     * |---------------------------|
+     * | Bournemouth v Man. United |
+     * | 17:30             2152443 |
+     * |===========================|
+     * | Sunday, 13 Dec 2015       |
+     * |===========================|
+     * | Aston Villa v Arsenal     |
+     * | 13:30             2152744 |
+     * |---------------------------|
+     * | Liverpool v West Brom     |
+     * | 16:00             2152745 |
+     * |---------------------------|
+     * | Tottenham v Newcastle     |
+     * | 16:00             2152746 |
+     * |===========================|
+     * | Monday, 14 Dec 2015       |
+     * |===========================|
+     * | Leicester v Chelsea       |
+     * | 20:00             2152747 |
+     * |---------------------------|
+     *
+     * @param  {[type]}   error    [description]
+     * @param  {[type]}   feed     [description]
+     * @param  {Function} callback [description]
+     * @return {[type]}            [description]
+     */
     renderFixtures: function renderFixtures(error, feed, callback) {
         var today = util.today();
         //var today = new Date('2015-09-19T00:00:00Z');
@@ -102,6 +162,39 @@ var self = module.exports = {
             callback(null, buffer.join(''));
         }
     },
+    /**
+     * Renders a league table:
+     * |-----------------------------------|
+     * | #  | Team        | P  | GD  | Pts |
+     * |-----------------------------------|
+     * | 1  | Man. City   | 8  | 16  | 29  |
+     * | 2  | Leicester   | 7  | 8   | 29  |
+     * | 3  | Man. United | 6  | 10  | 28  |
+     * | 4  | Arsenal     | 6  | 12  | 27  |
+     * |-----------------------------------|
+     * | 5  | Tottenham   | 8  | 13  | 25  |
+     * |-----------------------------------|
+     * | 6  | Liverpool   | 7  | 3   | 23  |
+     * | 7  | C. Palace   | 8  | 5   | 22  |
+     * | 8  | West Ham    | 7  | 4   | 22  |
+     * | 9  | Everton     | 7  | 8   | 21  |
+     * | 10 | Southampton | 7  | 3   | 20  |
+     * | 11 | Watford     | 7  | -1  | 19  |
+     * | 12 | Stoke City  | 6  | -3  | 19  |
+     * | 13 | West Brom   | 7  | -5  | 18  |
+     * | 14 | Chelsea     | 7  | -6  | 15  |
+     * | 15 | Swansea     | 7  | -5  | 14  |
+     * | 16 | Norwich     | 7  | -8  | 13  |
+     * | 17 | Sunderland  | 7  | -10 | 12  |
+     * |-----------------------------------|
+     * | 18 | Bournemouth | 7  | -13 | 10  |
+     * | 19 | Newcastle   | 7  | -16 | 10  |
+     * | 20 | Aston Villa | 7  | -15 | 5   |
+     * |-----------------------------------|
+     * @param  {Object}   error    An error object
+     * @param  {Object}   feed     The feed
+     * @param  {Function} callback The callback function
+     */
     renderTable: function renderTable(error, feed, callback) {
         //Check for error
         if (error) {
@@ -166,7 +259,26 @@ var self = module.exports = {
         buffer.push(lastDivider);
         callback(null, buffer.join(''));
     },
-    renderTeamStats: function renderTeamStats(error, feed, teamName, callback) {
+    /**
+     * Renders team statistics:
+     * |---------------------------------|
+     * | Man. United                     |
+     * |---------------------------------|
+     * | League # | Points | Recent form |
+     * | 3        | 19     | WWDLL       |
+     * |---------------------------------|
+     * |       | GP | W  | D  | L  | GD  |
+     * | Total | 5  | 2  | 1  | 2  | 3   |
+     * | Home  | 3  | 2  | 0  | 1  | 4   |
+     * | Away  | 2  | 0  | 1  | 1  | -1  |
+     * |---------------------------------|
+     * @param  {Object}   err    [description]
+     * @param  {[type]}   feed     [description]
+     * @param  {[type]}   teamName [description]
+     * @param  {Function} callback [description]
+     * @return {[type]}            [description]
+     */
+    renderTeamStats: function renderTeamStats(err, feed, teamName, callback) {
         var standings = feed.teams.filter(function(el) {
             return el.stand_team_name == teamName;
         });
