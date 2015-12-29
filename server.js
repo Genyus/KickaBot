@@ -87,7 +87,7 @@ var bot = new Bot({
         var today = util.today();
         var endDate = util.today();
 
-        endDate.setDate(endDate.getDate() + 7);
+        endDate.setDate(endDate.getDate() + days);
 
         var fixtures = util.getFeed({
             'name': 'fixtures',
