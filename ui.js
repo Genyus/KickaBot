@@ -135,31 +135,39 @@ var self = module.exports = {
      * @return {[type]}            [description]
      */
     renderFixtures: function renderFixtures(error, feed, callback) {
-        var today = util.today();
-        //var today = new Date('2015-09-19T00:00:00Z');
-        var matches = feed.matches.filter(function(el) {
-            return self.getDate(el.match_formatted_date) >= today;
-        });
-        var buffer = [];
-        var currentDate = new Date(1970, 0, 1);
-
-        for (var i = 0; i < matches.length; i++) {
-            var match = matches[i];
-            var matchDate = self.getDate(match.match_formatted_date);
-            if (matchDate > currentDate) {
-                if (i > 0)
-                    buffer.push('\r\n');
-
-                buffer.push(match.match_date + '\r\n');
-                currentDate = matchDate;
-            }
-            buffer.push(match.match_localteam_name + ' vs ' +
-                match.match_visitorteam_name + ', ' + match.match_time + ' [' +
-                match.match_id + ']' + '\r\n');
+        if (error) {
+            return callback(error);
         }
 
-        if(typeof(callback) === 'function') {
-            callback(null, buffer.join(''));
+        if (typeof(feed.matches) !== 'undefined') {
+            var today = util.today();
+            //var today = new Date('2015-09-19T00:00:00Z');
+            var matches = feed.matches.filter(function(el) {
+                return self.getDate(el.match_formatted_date) >= today;
+            });
+            var buffer = [];
+            var currentDate = new Date(1970, 0, 1);
+
+            for (var i = 0; i < matches.length; i++) {
+                var match = matches[i];
+                var matchDate = self.getDate(match.match_formatted_date);
+                if (matchDate > currentDate) {
+                    if (i > 0)
+                        buffer.push('\r\n');
+
+                    buffer.push(match.match_date + '\r\n');
+                    currentDate = matchDate;
+                }
+                buffer.push(match.match_localteam_name + ' vs ' +
+                    match.match_visitorteam_name + ', ' + match.match_time + ' [' +
+                    match.match_id + ']' + '\r\n');
+            }
+
+            if (typeof(callback) === 'function') {
+                callback(null, buffer.join(''));
+            }
+        } else if (typeof(callback) === 'function') {
+            callback(new Error('Couldn\'t retrieve fixtures, please try again later'));
         }
     },
     /**
@@ -285,7 +293,9 @@ var self = module.exports = {
 
         // We couldn't recognise the provided team name
         if (standings.length != 1) {
-            return;
+            err = new Error('Team name wasn\'t recognised, please try again.');
+
+            return callback(err);
         }
         // Markdown code blocks require a space after the opening block and a
         // non-whitespace character after the closing block
@@ -293,8 +303,9 @@ var self = module.exports = {
         var width = 33;
         var divider = self.writeDivider(width);
         var mark = divider.length - 2;
-        var lastDivider = divider.slice(0, mark) + '```' + divider.slice(mark);
-        var firstDivider = String.format('``` {0}', divider);
+        //var lastDivider = divider.slice(0, mark) + '```' + divider.slice(mark);
+        var lastDivider = divider + '```';
+        var firstDivider = String.format('```\n{0}', divider);
         var buffer = [firstDivider];
         var cells = [{
             'text': team.stand_team_name,

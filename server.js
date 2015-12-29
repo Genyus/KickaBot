@@ -97,12 +97,8 @@ var bot = new Bot({
                 today.format('d.m.yyyy'),
                 endDate.format('d.m.yyyy'))
         }, function(err, feed, args){
-            ui.renderFixtures(err, feed, function(err, text) {
-                bot.sendMessage({
-                    chat_id: message.chat.id,
-                    text: text,
-                    parse_mode: 'Markdown'
-                });
+            ui.renderFixtures(err, feed, function(err, text){
+                sendMessage(err, text, bot, message, feed);
             });
         });
     })
@@ -112,11 +108,7 @@ var bot = new Bot({
             'qs': qs
         }, function(err, feed, args){
             ui.renderTable(err, feed, function(err, text) {
-                bot.sendMessage({
-                    chat_id: message.chat.id,
-                    text: text,
-                    parse_mode: 'Markdown'
-                });
+                sendMessage(err, text, bot, message, feed);
             });
         });
     })
@@ -126,18 +118,39 @@ var bot = new Bot({
             'qs': qs,
             'args': args
         }, function(err, feed, args){
+            if(err){
+                return sendMessage(err, null, bot, message, feed);
+            }
+            if(args && args.length > 0){
             var teamName = ui.getFullName(args);
 
             ui.renderTeamStats(err, feed, teamName, function(err, text) {
-                bot.sendMessage({
-                    chat_id: message.chat.id,
-                    text: text,
-                    parse_mode: 'Markdown'
-                });
+                sendMessage(err, text, bot, message, feed);
             });
+        }
+        else{
+            var error = new Error('Team name wasn\'t specified, please try again.');
+
+            sendMessage(error, null, bot, message, null);
+        }
         });
     })
     .start();
+
+    var sendMessage = function(err, text, bot, message, feed) {
+        if(err){
+            if(feed){
+                console.log('Error occurred while rendering:\r\n' + feed);
+            }
+
+            text = err.message;
+        }
+        bot.sendMessage({
+            chat_id: message.chat.id,
+            text: text,
+            parse_mode: 'Markdown'
+        });
+    };
 
     Date.prototype.format = function (mask, utc) {
         return dateFormat(this, mask, utc);

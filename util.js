@@ -59,34 +59,34 @@ module.exports = {
 function loadFeed(options, callback) {
     var feed;
     var url = buildApiUrl(options);
+    var genericError = new Error('An error occurred, please try again later');
 
-    //feed = require('./data/' + name + '.json');
-    //callback(null, feed, message);
-    if (options.qs) {
-        url += options.qs;
-    }
-
-    request(url, function(error, response, body) {
-        console.log('Requested ' + url);
+    console.log('Requesting ' + url);
+    request(url, function(err, response, body) {
         //Check for error
-        if (error) {
-            return console.log(String.format('Error while requesting {0}:', url), error);
+        if (err) {
+            console.log(String.format('Error occurred while requesting {0}: ', url), err);
+
+            return callback(genericError);
         }
 
         //Check for right status code
         if (response.statusCode !== 200) {
-            return console.log('Invalid Status Code Returned:', response.statusCode);
+            console.log('Invalid response status code returned: ', response.statusCode);
+
+            return callback(genericError);
         }
 
-        //All is good. Save the body
-        feed = JSON.parse(body); // Show the response from the API.
-        var err = typeof(feed) !== 'object' ?
-            new Error(String.format('No feed available at {0}', url)) :
-            null;
+        //Response is good. Save the body
+        try {
+            feed = JSON.parse(body); // Parse the response from the API.
+        } catch (exception) {
+            console.log(String.format('Error occurred while parsing JSON: {0}\r\nJSON:\r\n{1}', url), exception.message, body);
 
-        if (callback && typeof(callback) === 'function') {
-            callback(err, feed);
+            return callback(genericError);
         }
+
+        callback(null, feed.contents);
     });
 }
 
