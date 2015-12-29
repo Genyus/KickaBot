@@ -4,6 +4,7 @@ var request = require('request');
 // npm modules
 var _ = require('lodash');
 var cacheManager = require('cache-manager');
+var config = require('config');
 
 var ttl = 5;
 var memoryCache = cacheManager.caching({
@@ -11,6 +12,7 @@ var memoryCache = cacheManager.caching({
     max: 100,
     ttl: 120 /*seconds*/
 });
+var apiConfig = config.get('Server.footballApi');
 
 module.exports = {
     capitalise: function(input) {
@@ -56,8 +58,7 @@ module.exports = {
 
 function loadFeed(options, callback) {
     var feed;
-    var apiKey = 'f1ed2f61-7f06-86be-730afbc12309';
-    var url = String.format('http://football-api.com/api/?Action={0}&APIKey={1}', options.name, apiKey);
+    var url = buildApiUrl(options);
 
     //feed = require('./data/' + name + '.json');
     //callback(null, feed, message);
@@ -87,4 +88,21 @@ function loadFeed(options, callback) {
             callback(err, feed);
         }
     });
+}
+
+function buildApiUrl(options){
+    var apiQs = String.format('?Action={0}&APIKey={1}', options.name, apiConfig.apiKey);
+    var proxyUrl = 'http://api.ingenyus.com/ba-simple-proxy.php?url=http://football-api.com/api/';
+
+    //feed = require('./data/' + name + '.json');
+    //callback(null, feed, message);
+    if (options.qs) {
+        apiQs += options.qs;
+    }
+
+    // URL encode the querystring
+    apiQs = encodeURIComponent(apiQs);
+
+    // Request via proxy to avoid IP restriction issues
+    return proxyUrl.concat(apiQs);
 }

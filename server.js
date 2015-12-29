@@ -4,6 +4,7 @@ var http = require('http');
 // npm modules
 var Bot = require('node-telegram-bot');
 var dateFormat = require('dateformat');
+var config = require('config');
 
 // Custom modules
 var util = require('./util');
@@ -11,9 +12,10 @@ var ui = require('./ui');
 
 var leagueId = '1204';
 var qs = String.format('&comp_id={0}', leagueId);
+var telegramConfig = config.get('Server.telegram');
 
 var bot = new Bot({
-        token: '126942443:AAF-6j6eaR6aNxSy9jdaYkngEwOpWnFlNTY'
+        token: telegramConfig.token
     })
     .on('message', function(message) {
         switch (message.text) {
