@@ -238,7 +238,7 @@ var self = module.exports = {
                 'text': self.getShortName(standing.stand_team_name),
                 'width': 11
             }, {
-                'text': standing.stand_home_gp,
+                'text': standing.stand_overall_gp,
                 'width': 2
             }, {
                 'text': standing.stand_gd,
