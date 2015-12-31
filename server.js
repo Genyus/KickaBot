@@ -177,13 +177,12 @@ Date.prototype.format = function(mask, utc) {
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
-if (port !== 8080) {
+if (ipaddress !== '127.0.0.1') {
+    console.log(String.format('Starting server on {0}:{1}', ipaddress, port));
     http.createServer(function(req, res) {
         res.writeHead(200, {
             'Content-Type': 'text/plain'
         });
-        res.end('Nothing to see here...\n');
+        res.end('Nothing to see here...\r\n');
     }).listen(port, ipaddress);
-
-    console.log(String.format('Server running on {0}:{1}', ipaddress, port));
 }
