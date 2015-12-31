@@ -112,7 +112,7 @@ var bot = new Bot({
             });
         });
     })
-    .on('stats', function(message, args) {
+    .on('teamstats', function(message, args) {
         var feed = util.getFeed({
             'name': 'standings',
             'qs': qs,
