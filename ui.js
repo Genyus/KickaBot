@@ -172,6 +172,45 @@ var self = module.exports = {
             callback(new Error('Couldn\'t retrieve fixtures, please try again later'));
         }
     },
+   renderResults: function renderResults(err, feed, callback) {
+       if (err) {
+           return callback(error);
+       }
+
+       if (typeof(feed.matches) !== 'undefined') {
+           var today = util.today();
+           //var today = new Date('2015-09-19T00:00:00Z');
+           var matches = feed.matches.filter(function(el) {
+               return self.getDate(el.match_formatted_date) <= today;
+           });
+           var buffer = [];
+           var currentDate = new Date(1970, 0, 1);
+           var padding = Array(18).join(' ');
+
+           _.each(matches.reverse(), function(match, i) {
+               var matchDate = self.getDate(match.match_formatted_date);
+               if (matchDate < currentDate || i === 0) {
+                   if (i > 0)
+                       buffer.push('```\r\n');
+
+                   buffer.push('*' + match.match_date + '*\r\n```');
+                   currentDate = matchDate;
+               }
+
+               buffer.push(String.format('{0} {1}-{2} {3}\r\n',
+                   pad(padding, match.match_localteam_name, true),
+                   match.match_localteam_score, match.match_visitorteam_score,
+                   match.match_visitorteam_name));
+           });
+
+           buffer.push('```');
+           if (typeof(callback) === 'function') {
+               callback(null, buffer.join(''));
+           }
+       } else if (typeof(callback) === 'function') {
+           callback(new Error('Couldn\'t retrieve results, please try again later'));
+       }
+   },
     /**
      * Renders a league table:
      * |-----------------------------------|

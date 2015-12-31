@@ -13,6 +13,7 @@ var ui = require('./ui');
 var leagueId = '1204';
 var qs = String.format('&comp_id={0}', leagueId);
 var telegramConfig = config.get('Server.telegram');
+var days = 6;
 
 var bot = new Bot({
         token: telegramConfig.token
@@ -83,7 +84,6 @@ var bot = new Bot({
         console.log(message);
     })
     .on('fixtures', function(message, args) {
-        var days = 7;
         var today = util.today();
         var endDate = util.today();
 
@@ -98,6 +98,25 @@ var bot = new Bot({
                 endDate.format('dd.mm.yyyy'))
         }, function(err, feed, args){
             ui.renderFixtures(err, feed, function(err, text){
+                sendMessage(err, text, bot, message, feed);
+            });
+        });
+    })
+    .on('results', function(message, args) {
+        var today = util.today();
+        var startDate = util.today();
+
+        startDate.setDate(startDate.getDate() - days);
+
+        var fixtures = util.getFeed({
+            'name': 'fixtures',
+            'qs': String.format(
+                '{0}&from_date={1}&to_date={2}',
+                qs,
+                startDate.format('dd.mm.yyyy'),
+                today.format('dd.mm.yyyy'))
+        }, function(err, feed, args){
+            ui.renderResults(err, feed, function(err, text){
                 sendMessage(err, text, bot, message, feed);
             });
         });
