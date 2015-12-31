@@ -1,5 +1,6 @@
 // npm modules
 var Bot = require('node-telegram-bot');
+var _ = require('lodash');
 
 // Custom modules
 var util = require('./util');
@@ -148,20 +149,21 @@ var self = module.exports = {
             var buffer = [];
             var currentDate = new Date(1970, 0, 1);
 
-            for (var i = 0; i < matches.length; i++) {
-                var match = matches[i];
+            _.each(matches, function(match, i) {
                 var matchDate = self.getDate(match.match_formatted_date);
+
                 if (matchDate > currentDate) {
                     if (i > 0)
                         buffer.push('\r\n');
 
-                    buffer.push(match.match_date + '\r\n');
+                    buffer.push('*' + match.match_date + '*\r\n');
                     currentDate = matchDate;
                 }
-                buffer.push(match.match_localteam_name + ' vs ' +
-                    match.match_visitorteam_name + ', ' + match.match_time + ' [' +
-                    match.match_id + ']' + '\r\n');
-            }
+
+                buffer.push(String.format('{0} | {1} vs {2} _({3})_\r\n',
+                    match.match_time, match.match_localteam_name,
+                    match.match_visitorteam_name, match.match_id));
+            });
 
             if (typeof(callback) === 'function') {
                 callback(null, buffer.join(''));
