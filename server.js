@@ -96,8 +96,8 @@ var bot = new Bot({
                 qs,
                 today.format('dd.mm.yyyy'),
                 endDate.format('dd.mm.yyyy'))
-        }, function(err, feed, args){
-            ui.renderFixtures(err, feed, function(err, text){
+        }, function(err, feed, args) {
+            ui.renderFixtures(err, feed, function(err, text) {
                 sendMessage(err, text, bot, message, feed);
             });
         });
@@ -115,8 +115,8 @@ var bot = new Bot({
                 qs,
                 startDate.format('dd.mm.yyyy'),
                 today.format('dd.mm.yyyy'))
-        }, function(err, feed, args){
-            ui.renderResults(err, feed, function(err, text){
+        }, function(err, feed, args) {
+            ui.renderResults(err, feed, function(err, text) {
                 sendMessage(err, text, bot, message, feed);
             });
         });
@@ -125,7 +125,7 @@ var bot = new Bot({
         var feed = util.getFeed({
             'name': 'standings',
             'qs': qs
-        }, function(err, feed, args){
+        }, function(err, feed, args) {
             ui.renderTable(err, feed, function(err, text) {
                 sendMessage(err, text, bot, message, feed);
             });
@@ -136,47 +136,54 @@ var bot = new Bot({
             'name': 'standings',
             'qs': qs,
             'args': args
-        }, function(err, feed, args){
-            if(err){
+        }, function(err, feed, args) {
+            if (err) {
                 return sendMessage(err, null, bot, message, feed);
             }
-            if(args && args.length > 0){
-            var teamName = ui.getFullName(args);
+            if (args && args.length > 0) {
+                var teamName = ui.getFullName(args);
 
-            ui.renderTeamStats(err, feed, teamName, function(err, text) {
-                sendMessage(err, text, bot, message, feed);
-            });
-        }
-        else{
-            var error = new Error('Team name wasn\'t specified, please try again.');
+                ui.renderTeamStats(err, feed, teamName, function(err, text) {
+                    sendMessage(err, text, bot, message, feed);
+                });
+            } else {
+                var error = new Error('Team name wasn\'t specified, please try again.');
 
-            sendMessage(error, null, bot, message, null);
-        }
+                sendMessage(error, null, bot, message, null);
+            }
         });
     })
     .start();
 
-    var sendMessage = function(err, text, bot, message, feed) {
-        if(err){
-            if(feed){
-                console.log('Error occurred while rendering:\r\n' + feed);
-            }
-
-            text = err.message;
+var sendMessage = function(err, text, bot, message, feed) {
+    if (err) {
+        if (feed) {
+            console.log('Error occurred while rendering:\r\n' + feed);
         }
-        bot.sendMessage({
-            chat_id: message.chat.id,
-            text: text,
-            parse_mode: 'Markdown'
-        });
-    };
 
-    Date.prototype.format = function (mask, utc) {
-        return dateFormat(this, mask, utc);
-    };
-// http.createServer(function (req, res) {
-//   res.writeHead(200, {'Content-Type': 'text/plain'});
-//   res.end('Hello World\n');
-// }).listen(8080);
-//
-// console.log('Server running on port 8080.');
+        text = err.message;
+    }
+    bot.sendMessage({
+        chat_id: message.chat.id,
+        text: text,
+        parse_mode: 'Markdown'
+    });
+};
+
+Date.prototype.format = function(mask, utc) {
+    return dateFormat(this, mask, utc);
+};
+
+var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+
+if (port !== 8080) {
+    http.createServer(function(req, res) {
+        res.writeHead(200, {
+            'Content-Type': 'text/plain'
+        });
+        res.end('Nothing to see here...\n');
+    }).listen(port, ipaddress);
+
+    console.log(String.format('Server running on {0}:{1}', ipaddress, port));
+}
