@@ -1,0 +1,11 @@
+{
+    // Server module configs
+    "Server": {
+        "telegram": {
+            "token": "126942443:AAF-6j6eaR6aNxSy9jdaYkngEwOpWnFlNTY"
+        },
+        "footballApi": {
+            "apiKey": "f1ed2f61-7f06-86be-730afbc12309"
+        }
+    }
+}

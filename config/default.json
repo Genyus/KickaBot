@@ -2,10 +2,10 @@
     // Server module configs
     "Server": {
         "telegram": {
-            "token": "126942443:AAF-6j6eaR6aNxSy9jdaYkngEwOpWnFlNTY"
+            "token": "177529292:AAFBWTccrdecBq5GXLYjwqTV6X0r1HpWn-4"
         },
         "footballApi": {
-            "apiKey": "f1ed2f61-7f06-86be-730afbc12309",
+            "apiKey": "6bd3ed01-ebd9-bcef-0f64f0ee31d7",
             "pollInterval": 60
         }
     }
