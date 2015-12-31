@@ -10,7 +10,7 @@
     "dateformat": "^1.0.12",
     "forever": "^0.15.1",
     "lodash": "^3.10.1",
-    "node-telegram-bot": "^0.1.6"
+    "node-telegram-bot": "^0.1.9"
   },
   "devDependencies": {},
   "scripts": {
