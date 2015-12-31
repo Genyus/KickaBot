@@ -94,8 +94,8 @@ var bot = new Bot({
             'qs': String.format(
                 '{0}&from_date={1}&to_date={2}',
                 qs,
-                today.format('d.m.yyyy'),
-                endDate.format('d.m.yyyy'))
+                today.format('dd.mm.yyyy'),
+                endDate.format('dd.mm.yyyy'))
         }, function(err, feed, args){
             ui.renderFixtures(err, feed, function(err, text){
                 sendMessage(err, text, bot, message, feed);
