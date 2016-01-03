@@ -175,7 +175,7 @@ Date.prototype.format = function(mask, utc) {
 };
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
-var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+var port = process.env.OPENSHIFT_NODEJS_PORT || 8090;
 
 if (ipaddress !== '127.0.0.1') {
     console.log(String.format('Starting server on {0}:{1}', ipaddress, port));
