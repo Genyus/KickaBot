@@ -7,8 +7,8 @@ var dateFormat = require('dateformat');
 var config = require('config');
 
 // Custom modules
-var util = require('./util');
-var ui = require('./ui');
+var util = require('./lib/util');
+var ui = require('./lib/ui');
 
 var leagueId = '1204';
 var qs = String.format('&comp_id={0}', leagueId);
