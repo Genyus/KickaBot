@@ -1,5 +1,5 @@
 // Core modules
-var http = require('http');
+//var http = require('http');
 
 // npm modules
 var Bot = require('node-telegram-bot');
@@ -174,15 +174,15 @@ Date.prototype.format = function(mask, utc) {
     return dateFormat(this, mask, utc);
 };
 
-var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
-var port = process.env.OPENSHIFT_NODEJS_PORT || 8090;
-
-if (ipaddress !== '127.0.0.1') {
-    console.log(String.format('Starting server on {0}:{1}', ipaddress, port));
-    http.createServer(function(req, res) {
-        res.writeHead(200, {
-            'Content-Type': 'text/plain'
-        });
-        res.end('Nothing to see here...\r\n');
-    }).listen(port, ipaddress);
-}
+// var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+// var port = process.env.OPENSHIFT_NODEJS_PORT || 8090;
+//
+// if (ipaddress !== '127.0.0.1') {
+//     console.log(String.format('Starting server on {0}:{1}', ipaddress, port));
+//     http.createServer(function(req, res) {
+//         res.writeHead(200, {
+//             'Content-Type': 'text/plain'
+//         });
+//         res.end('Nothing to see here...\r\n');
+//     }).listen(port, ipaddress);
+// }
