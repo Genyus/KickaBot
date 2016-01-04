@@ -56,7 +56,7 @@ var bot = new Bot({
         }
     })
     .on('message', function(message) {
-        console.log(message);
+        util.log(message);
     })
     //Command without argument
     .on('test', function(message) {
@@ -74,14 +74,14 @@ var bot = new Bot({
         });
     })
     .on('stop', function(message) {
-        console.log('stop');
+        util.log('stop');
         bot.stop();
     })
     .on('start', function(message) {
         bot.start();
     })
     .on('error', function(message) {
-        console.log(message);
+        util.log(message);
     })
     .on('fixtures', function(message, args) {
         var today = util.today();
@@ -98,7 +98,7 @@ var bot = new Bot({
                 endDate.format('dd.mm.yyyy'))
         }, function(err, feed, args) {
             ui.renderFixtures(err, feed, function(err, text) {
-                sendMessage(err, text, bot, message, feed);
+                sendMessage(err, text, bot, message);
             });
         });
     })
@@ -117,7 +117,7 @@ var bot = new Bot({
                 today.format('dd.mm.yyyy'))
         }, function(err, feed, args) {
             ui.renderResults(err, feed, function(err, text) {
-                sendMessage(err, text, bot, message, feed);
+                sendMessage(err, text, bot, message);
             });
         });
     })
@@ -127,7 +127,7 @@ var bot = new Bot({
             'qs': qs
         }, function(err, feed, args) {
             ui.renderTable(err, feed, function(err, text) {
-                sendMessage(err, text, bot, message, feed);
+                sendMessage(err, text, bot, message);
             });
         });
     })
@@ -138,7 +138,7 @@ var bot = new Bot({
             'args': args
         }, function(err, feed, args) {
             if (err) {
-                return sendMessage(err, null, bot, message, feed);
+                return sendMessage(err, null, bot, message);
             }
             if (args && args.length > 0) {
                 var teamName = ui.getFullName(args);
@@ -149,18 +149,14 @@ var bot = new Bot({
             } else {
                 var error = new Error('Team name wasn\'t specified, please try again.');
 
-                sendMessage(error, null, bot, message, null);
+                sendMessage(error, null, bot, message);
             }
         });
     })
     .start();
 
-var sendMessage = function(err, text, bot, message, feed) {
+var sendMessage = function(err, text, bot, message) {
     if (err) {
-        if (feed) {
-            console.log('Error occurred while rendering:\r\n' + feed);
-        }
-
         text = err.message;
     }
     bot.sendMessage({
@@ -178,7 +174,7 @@ Date.prototype.format = function(mask, utc) {
 // var port = process.env.OPENSHIFT_NODEJS_PORT || 8090;
 //
 // if (ipaddress !== '127.0.0.1') {
-//     console.log(String.format('Starting server on {0}:{1}', ipaddress, port));
+//     util.log(String.format('Starting server on {0}:{1}', ipaddress, port));
 //     http.createServer(function(req, res) {
 //         res.writeHead(200, {
 //             'Content-Type': 'text/plain'
