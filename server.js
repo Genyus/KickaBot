@@ -13,7 +13,7 @@ var ui = require('./lib/ui');
 var leagueId = '1204';
 var qs = String.format('&comp_id={0}', leagueId);
 var telegramConfig = config.get('Server.telegram');
-var days = 6;
+var days = 13;
 
 var bot = new Bot({
         token: telegramConfig.token
