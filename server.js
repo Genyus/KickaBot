@@ -98,7 +98,10 @@ var bot = new Bot({
                 endDate.format('dd.mm.yyyy'))
         }, function(err, feed, args) {
             ui.renderFixtures(err, feed, function(err, text) {
-                sendMessage(err, text, bot, message);
+                sendMessage(bot, util.createOptions({
+                    chat_id: message.chat.id,
+                    text: err ? err.message : text
+                }));
             });
         });
     })
@@ -117,7 +120,10 @@ var bot = new Bot({
                 today.format('dd.mm.yyyy'))
         }, function(err, feed, args) {
             ui.renderResults(err, feed, function(err, text) {
-                sendMessage(err, text, bot, message);
+                sendMessage(bot, util.createOptions({
+                    chat_id: message.chat.id,
+                    text: err ? err.message : text
+                }));
             });
         });
     })
@@ -127,7 +133,10 @@ var bot = new Bot({
             'qs': qs
         }, function(err, feed, args) {
             ui.renderTable(err, feed, function(err, text) {
-                sendMessage(err, text, bot, message);
+                sendMessage(bot, util.createOptions({
+                    chat_id: message.chat.id,
+                    text: err ? err.message : text
+                }));
             });
         });
     })
@@ -138,32 +147,33 @@ var bot = new Bot({
             'args': args
         }, function(err, feed, args) {
             if (err) {
-                return sendMessage(err, null, bot, message);
+                return sendMessage(bot, util.createOptions({
+                    chat_id: message.chat.id,
+                    text: err.message
+                }));
             }
             if (args && args.length > 0) {
                 var teamName = ui.getFullName(args);
 
                 ui.renderTeamStats(err, feed, teamName, function(err, text) {
-                    sendMessage(err, text, bot, message, feed);
+                    sendMessage(bot, util.createOptions({
+                        chat_id: message.chat.id,
+                        text: err ? err.message : text
+                    }));
                 });
             } else {
-                var error = new Error('Team name wasn\'t specified, please try again.');
-
-                sendMessage(error, null, bot, message);
+                sendMessage(bot, util.createOptions({
+                    chat_id: message.chat.id,
+                    text: 'Team name wasn\'t specified, please try again.'
+                }));
             }
         });
     })
     .start();
 
-var sendMessage = function(err, text, bot, message) {
-    if (err) {
-        text = err.message;
-    }
-    bot.sendMessage({
-        chat_id: message.chat.id,
-        text: text,
-        parse_mode: 'Markdown'
-    });
+var sendMessage = function(bot, options) {
+    util.log(String.format('id: {0}, parse_mode: {1}, text: {2}', options.chat_id, options.parse_mode, options.text));
+    bot.sendMessage(options);
 };
 
 Date.prototype.format = function(mask, utc) {
