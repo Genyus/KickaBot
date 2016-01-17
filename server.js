@@ -97,12 +97,19 @@ var bot = new Bot({
                 today.format('dd.mm.yyyy'),
                 endDate.format('dd.mm.yyyy'))
         }, function(err, feed, args) {
-            ui.renderFixtures(err, feed, function(err, text) {
+            if (!err && !feed) {
                 sendMessage(bot, util.createOptions({
                     chat_id: message.chat.id,
-                    text: err ? err.message : text
+                    action: 'typing'
                 }));
-            });
+            } else {
+                ui.renderFixtures(err, feed, function(err, text) {
+                    sendMessage(bot, util.createOptions({
+                        chat_id: message.chat.id,
+                        text: err ? err.message : text
+                    }));
+                });
+            }
         });
     })
     .on('results', function(message, args) {
@@ -119,12 +126,19 @@ var bot = new Bot({
                 startDate.format('dd.mm.yyyy'),
                 today.format('dd.mm.yyyy'))
         }, function(err, feed, args) {
-            ui.renderResults(err, feed, function(err, text) {
+            if (!err && !feed) {
                 sendMessage(bot, util.createOptions({
                     chat_id: message.chat.id,
-                    text: err ? err.message : text
+                    action: 'typing'
                 }));
-            });
+            } else {
+                ui.renderResults(err, feed, function(err, text) {
+                    sendMessage(bot, util.createOptions({
+                        chat_id: message.chat.id,
+                        text: err ? err.message : text
+                    }));
+                });
+            }
         });
     })
     .on('table', function(message) {
@@ -132,12 +146,19 @@ var bot = new Bot({
             'name': 'standings',
             'qs': qs
         }, function(err, feed, args) {
-            ui.renderTable(err, feed, function(err, text) {
+            if (!err && !feed) {
                 sendMessage(bot, util.createOptions({
                     chat_id: message.chat.id,
-                    text: err ? err.message : text
+                    action: 'typing'
                 }));
-            });
+            } else {
+                ui.renderTable(err, feed, function(err, text) {
+                    sendMessage(bot, util.createOptions({
+                        chat_id: message.chat.id,
+                        text: err ? err.message : text
+                    }));
+                });
+            }
         });
     })
     .on('teamstats', function(message, args) {
@@ -146,34 +167,59 @@ var bot = new Bot({
             'qs': qs,
             'args': args
         }, function(err, feed, args) {
-            if (err) {
+            if (!err && !feed) { // Send "typing..." action
+                sendMessage(bot, util.createOptions({
+                    chat_id: message.chat.id,
+                    action: 'typing'
+                }));
+            } else if (err) { // Send error message
                 return sendMessage(bot, util.createOptions({
                     chat_id: message.chat.id,
                     text: err.message
                 }));
-            }
-            if (args && args.length > 0) {
-                var teamName = ui.getFullName(args);
+            } else { // Send response
+                if (args && args.length > 0) {
+                    var teamName = ui.getFullName(args);
 
-                ui.renderTeamStats(err, feed, teamName, function(err, text) {
+                    ui.renderTeamStats(err, feed, teamName, function(err, text) {
+                        sendMessage(bot, util.createOptions({
+                            chat_id: message.chat.id,
+                            text: err ? err.message : text
+                        }));
+                    });
+                } else {
                     sendMessage(bot, util.createOptions({
                         chat_id: message.chat.id,
-                        text: err ? err.message : text
+                        text: 'Team name wasn\'t specified, please try again.'
                     }));
-                });
-            } else {
-                sendMessage(bot, util.createOptions({
-                    chat_id: message.chat.id,
-                    text: 'Team name wasn\'t specified, please try again.'
-                }));
+                }
             }
         });
     })
     .start();
 
+var actions = {};
 var sendMessage = function(bot, options) {
-    util.log(String.format('id: {0}, parse_mode: {1}, text: {2}', options.chat_id, options.parse_mode, options.text));
-    bot.sendMessage(options);
+    if (options.action) {
+        sendAction(bot, options, function() {
+            actions[options.chat_id] = setTimeout(function() {
+                sendMessage(bot, options);
+            }, 5000);
+        });
+    } else {
+        if (actions[options.chat_id]) {
+            clearTimeout(actions[options.chat_id]);
+            delete actions[options.chat_id];
+        }
+        util.log(String.format('id: {0}, parse_mode: {1}, text: {2}', options.chat_id, options.parse_mode, options.text));
+        bot.sendMessage(options);
+    }
+};
+var sendAction = function(bot, options, callback) {
+    util.log('Typing...');
+    bot.sendChatAction(options);
+    //when finish, call "callback"
+    callback(options);
 };
 
 Date.prototype.format = function(mask, utc) {
