@@ -49,7 +49,21 @@ var util = require('./lib/util');
 
     var chat = new Chat(bot);
     var getTeamName = function(message, args) {
-        util.log('Getting team name from user...');
+        util.log('Requesting team name from user...');
+        var options = {
+            chat_id: message.chat.id,
+            text: 'Which team do you want statistics for?'
+        };
+
+        if(message.chat.type !== 'private') {
+            options.reply_markup = {
+                force_reply: true,
+                selective: true
+            };
+            options.reply_to_message_id = message.message_id;
+        }
+
+        chat.sendMessage(util.createOptions(options));
     };
     var initCommand = function(message, args, commandName) {
         var command = chat.getCommand(message);
@@ -151,13 +165,13 @@ var util = require('./lib/util');
 
         chat.processCommand(message, options, callback);
     };
-    var sendTeamStats = function(err, feed, message, args) {
+    var sendTeamStats = function(message, args) {
         var options = {
             'name': 'standings',
             'qs': qs,
             'args': args
         };
-        var callback = function(message, args) {
+        var callback = function(err, feed, message, args) {
             if (args && args.length > 0) {
                 var teamName = ui.getFullName(args);
 
