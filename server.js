@@ -5,6 +5,7 @@ var http = require('http');
 var Bot = require('node-telegram-bot');
 var dateFormat = require('dateformat');
 var config = require('config');
+var _ = require('lodash');
 
 // Custom modules
 var Chat = require('./lib/chat');
@@ -48,22 +49,58 @@ var util = require('./lib/util');
         .start();
 
     var chat = new Chat(bot);
+    var getTeamKeyboard = function(feed) {
+        var standings = feed.teams.filter(function(el) {
+            return +(el.stand_team_id) !== 0;
+        });
+        var rows = [];
+        var cols = [];
+        var width = 2;
+
+        _.each(_.sortBy(standings, 'stand_team_name'), function(standing, i) {
+            if(i % width === 0) {
+                if(i > 0) {
+                    rows.push(cols);
+                }
+                cols = [];
+            }
+
+            cols.push(ui.getShortName(standing.stand_team_name));
+        });
+
+        if(cols.length > 0) {
+            rows.push(cols);
+        }
+
+        return rows;
+    };
     var getTeamName = function(message, args) {
         util.log('Requesting team name from user...');
         var options = {
-            chat_id: message.chat.id,
-            text: 'Which team do you want statistics for?'
+            'name': 'standings',
+            'qs': qs
+        };
+        var callback = function(error, feed, message, args) {
+            //Check for error
+            if (error) {
+                return util.log('Error in server.getTeamName', error);
+            }
+
+            var keyboard = getTeamKeyboard(feed);
+            var options = {
+                chat_id: message.chat.id,
+                text: 'Which team do you want statistics for?',
+                reply_markup: {
+                    keyboard: keyboard,
+                    resize_keyboard: true,
+                    selective: true
+                }
+            };
+
+            chat.sendMessage(util.createOptions(options));
         };
 
-        if(message.chat.type !== 'private') {
-            options.reply_markup = {
-                force_reply: true,
-                selective: true
-            };
-            options.reply_to_message_id = message.message_id;
-        }
-
-        chat.sendMessage(util.createOptions(options));
+        chat.processCommand(message, options, callback, true);
     };
     var initCommand = function(message, args, commandName) {
         var command = chat.getCommand(message);
@@ -178,7 +215,10 @@ var util = require('./lib/util');
                 ui.renderTeamStats(null, feed, teamName, function(err, text) {
                     chat.sendMessage(util.createOptions({
                         chat_id: message.chat.id,
-                        text: err ? err.message : text
+                        text: err ? err.message : text,
+                        reply_markup: {
+                            hide_keyboard: true
+                        }
                     }));
                 });
             } else {
