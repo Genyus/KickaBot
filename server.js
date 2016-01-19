@@ -184,7 +184,7 @@ var util = require('./lib/util');
             } else {
                 chat.sendMessage(util.createOptions({
                     chat_id: message.chat.id,
-                    text: 'Team name wasn\'t specified, please try again.'
+                    text: 'Team name wasn\'t provided, please try again.'
                 }));
             }
         };
