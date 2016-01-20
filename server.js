@@ -10,7 +10,7 @@ var _ = require('lodash');
 // Custom modules
 var Chat = require('./lib/chat');
 var ui = require('./lib/ui');
-var util = require('./lib/util');
+var utils = require('./lib/utils');
 
 (function() {
     var leagueId = '1204';
@@ -24,7 +24,7 @@ var util = require('./lib/util');
             processMessage(message);
         })
         .on('stop', function(message) {
-            util.log('stop');
+            utils.log('stop');
             bot.stop();
             //FIXME: Clean up all conversation variables
         })
@@ -32,7 +32,7 @@ var util = require('./lib/util');
             bot.start();
         })
         .on('error', function(message) {
-            util.log('ERROR: ' + message);
+            utils.log('ERROR: ' + message);
         })
         .on('fixtures', function(message, args) {
             initCommand(message, args, 'fixtures');
@@ -75,7 +75,7 @@ var util = require('./lib/util');
         return rows;
     };
     var getTeamName = function(message, args) {
-        util.log('Requesting team name from user...');
+        utils.log('Requesting team name from user...');
         var options = {
             'name': 'standings',
             'qs': qs
@@ -83,7 +83,7 @@ var util = require('./lib/util');
         var callback = function(error, feed, message, args) {
             //Check for error
             if (error) {
-                return util.log('Error in server.getTeamName', error);
+                return utils.log('Error in server.getTeamName', error);
             }
 
             var keyboard = getTeamKeyboard(feed);
@@ -97,7 +97,7 @@ var util = require('./lib/util');
                 }
             };
 
-            chat.sendMessage(util.createOptions(options));
+            chat.sendMessage(utils.createOptions(options));
         };
 
         chat.processCommand(message, options, callback, true);
@@ -107,19 +107,19 @@ var util = require('./lib/util');
 
         if (command) {
             //FIXME: Display error message if a command already exists
-            util.log('Current command: ' + command.name);
+            utils.log('Current command: ' + command.name);
         } else {
             chat.setCommand(message, chat.createCommand(commandName, args));
-            util.log('Set command: teamstats');
+            utils.log('Set command: teamstats');
         }
     };
     var processMessage = function(message) {
-        util.log(message);
+        utils.log(message);
 
         var command = chat.getCommand(message);
 
         if (!command) {
-            util.log('Broken command key: ' + chat._getMessageKey(message));
+            utils.log('Broken command key: ' + chat._getMessageKey(message));
             return;
         }
 
@@ -137,8 +137,8 @@ var util = require('./lib/util');
         }
     };
     var sendFixtures = function(message, args) {
-        var today = util.today();
-        var endDate = util.today();
+        var today = utils.today();
+        var endDate = utils.today();
 
         endDate.setDate(endDate.getDate() + days);
 
@@ -152,7 +152,7 @@ var util = require('./lib/util');
         };
         var callback = function(err, feed, message, args) {
             ui.renderFixtures(err, feed, function(err, text) {
-                chat.sendMessage(util.createOptions({
+                chat.sendMessage(utils.createOptions({
                     chat_id: message.chat.id,
                     text: err ? err.message : text
                 }));
@@ -162,8 +162,8 @@ var util = require('./lib/util');
         chat.processCommand(message, options, callback);
     };
     var sendResults = function(message, args) {
-        var today = util.today();
-        var startDate = util.today();
+        var today = utils.today();
+        var startDate = utils.today();
 
         startDate.setDate(startDate.getDate() - days);
 
@@ -177,7 +177,7 @@ var util = require('./lib/util');
         };
         var callback = function(err, feed, message, args) {
             ui.renderResults(err, feed, function(err, text) {
-                chat.sendMessage(util.createOptions({
+                chat.sendMessage(utils.createOptions({
                     chat_id: message.chat.id,
                     text: err ? err.message : text
                 }));
@@ -193,7 +193,7 @@ var util = require('./lib/util');
         };
         var callback = function(err, feed, message, args) {
             ui.renderTable(null, feed, function(err, text) {
-                chat.sendMessage(util.createOptions({
+                chat.sendMessage(utils.createOptions({
                     chat_id: message.chat.id,
                     text: err ? err.message : text
                 }));
@@ -213,7 +213,7 @@ var util = require('./lib/util');
                 var teamName = ui.getFullName(args);
 
                 ui.renderTeamStats(null, feed, teamName, function(err, text) {
-                    chat.sendMessage(util.createOptions({
+                    chat.sendMessage(utils.createOptions({
                         chat_id: message.chat.id,
                         text: err ? err.message : text,
                         reply_markup: {
@@ -222,7 +222,7 @@ var util = require('./lib/util');
                     }));
                 });
             } else {
-                chat.sendMessage(util.createOptions({
+                chat.sendMessage(utils.createOptions({
                     chat_id: message.chat.id,
                     text: 'Team name wasn\'t provided, please try again.'
                 }));
