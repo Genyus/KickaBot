@@ -53,13 +53,13 @@ var utils = require('./lib/utils');
         'teamstats': [chat.requestTeamName, chat.sendTeamStats]
     };
     var processMessage = function(message) {
-        utils.log(message);
-
         var command = chat.getCommand(message);
 
         if (!command) {
             return;
         }
+
+        utils.log(message);
 
         // Append the current message if not another command
         if (message.text && message.text.lastIndexOf('/', 0) !== 0) {
@@ -71,6 +71,7 @@ var utils = require('./lib/utils');
 
         // Execute the appropriate step
         if (commandSteps && commandSteps.length > command.args.length) {
+            // call method is needed to execute in correct context
             commandSteps[command.args.length].call(chat, message, command.args);
         }
     };
