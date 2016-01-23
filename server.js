@@ -62,7 +62,7 @@ var utils = require('./lib/utils');
         }
 
         // Append the current message if not another command
-        if (message.text.lastIndexOf('/', 0) !== 0) {
+        if (message.text && message.text.lastIndexOf('/', 0) !== 0) {
             command.args.push(message.text);
             chat.setCommand(message, command);
         }
