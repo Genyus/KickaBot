@@ -29,6 +29,9 @@ var utils = require('./lib/utils');
         .on('fixtures', function(message, args) {
             chat.initCommand(message, args, 'fixtures');
         })
+        .on('matchstats', function(message, args) {
+            chat.initCommand(message, args, 'matchstats');
+        })
         .on('results', function(message, args) {
             chat.initCommand(message, args, 'results');
         })
@@ -45,6 +48,7 @@ var utils = require('./lib/utils');
         'fixtures': [chat.sendFixtures],
         'results': [chat.sendResults],
         'table': [chat.sendTable],
+        'matchstats': [chat.requestMatchName, chat.sendMatchStats],
         'teamstats': [chat.requestTeamName, chat.sendTeamStats]
     };
     var processMessage = function(message) {
