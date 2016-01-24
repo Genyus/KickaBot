@@ -20,11 +20,6 @@ var utils = require('./lib/utils');
         .on('message', function(message) {
             processMessage(message);
         })
-        .on('stop', function(message) {
-            utils.log('stop');
-            bot.stop();
-            //FIXME: Clean up all conversation variables
-        })
         .on('start', function(message) {
             bot.start();
         })
