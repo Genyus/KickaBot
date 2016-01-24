@@ -6,6 +6,9 @@
         },
         "footballApi": {
             "apiKey": "f1ed2f61-7f06-86be-730afbc12309"
+        },
+        "botanio": {
+            "token": "rbwny4vfUOd0Ti:AAwiBpQJ7vEOtdka0"
         }
     }
 }

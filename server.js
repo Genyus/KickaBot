@@ -41,6 +41,7 @@ var utils = require('./lib/utils');
         .on('teamstats', function(message, args) {
             chat.initCommand(message, args, 'teamstats');
         })
+        .enableAnalytics(config.get('Server.botanio').token)
         .start();
 
     var chat = new Chat(bot);

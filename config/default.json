@@ -7,6 +7,9 @@
         "footballApi": {
             "apiKey": "6bd3ed01-ebd9-bcef-0f64f0ee31d7",
             "pollInterval": 60
+        },
+        "botanio": {
+            "token": "M1W7jDWUoVTj2bTp33pR0T_8ErwerwV:"
         }
     }
 }
