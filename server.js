@@ -6,6 +6,7 @@ var Bot = require('node-telegram-bot');
 var dateFormat = require('dateformat');
 var config = require('config');
 var _ = require('lodash');
+var Q = require('q');
 var util = require('util');
 
 // Custom modules
@@ -14,36 +15,7 @@ var utils = require('./lib/utils');
 
 (function() {
     var telegramConfig = config.get('Server.telegram');
-    var bot = new Bot({
-            token: telegramConfig.token
-        })
-        .on('message', function(message) {
-            processMessage(message);
-        })
-        .on('start', function(message) {
-            bot.start();
-        })
-        .on('error', function(message) {
-            utils.log('ERROR: ' + message);
-        })
-        .on('fixtures', function(message, args) {
-            chat.initCommand(message, args, 'fixtures');
-        })
-        .on('matchstats', function(message, args) {
-            chat.initCommand(message, args, 'matchstats');
-        })
-        .on('results', function(message, args) {
-            chat.initCommand(message, args, 'results');
-        })
-        .on('table', function(message, args) {
-            chat.initCommand(message, args, 'table');
-        })
-        .on('teamstats', function(message, args) {
-            chat.initCommand(message, args, 'teamstats');
-        })
-        .enableAnalytics(config.get('Server.botanio').token)
-        .start();
-
+    var bot = start_bot();
     var chat = new Chat(bot);
     var steps = {
         'fixtures': [chat.sendFixtures],
@@ -75,6 +47,60 @@ var utils = require('./lib/utils');
             commandSteps[command.args.length].call(chat, message, command.args);
         }
     };
+
+    function start_bot(){
+        return new Bot({
+                token: telegramConfig.token
+            })
+            .on('message', function(message) {
+                processMessage(message);
+            })
+            .on('start', function(message) {
+                bot.start();
+            })
+            .on('error', function(message) {
+                utils.log('ERROR: ' + message);
+            })
+            .on('fixtures', function(message, args) {
+                chat.initCommand(message, args, 'fixtures');
+            })
+            .on('matchstats', function(message, args) {
+                chat.initCommand(message, args, 'matchstats');
+            })
+            .on('results', function(message, args) {
+                chat.initCommand(message, args, 'results');
+            })
+            .on('table', function(message, args) {
+                chat.initCommand(message, args, 'table');
+            })
+            .on('teamstats', function(message, args) {
+                chat.initCommand(message, args, 'teamstats');
+            })
+            .enableAnalytics(config.get('Server.botanio').token)
+            .start();
+    }
+
+    function throw_error () {
+        var deferred = Q.defer();
+
+        deferred.reject(new Error('Fake error')); // rejects the promise with `er` as the reason
+
+        return deferred.promise; // the promise is returned
+    }
+
+    function query_bot (bot){
+        var promise = bot.getMe();//throw_error();
+
+        promise.then(function (data) {
+            setTimeout (function() { query_bot(bot); }, 60000); //queue for next ping in the next predefined interval
+        }, function (err) {
+            console.error(err);
+            bot = start_bot();
+            setTimeout (function() { query_bot(bot); }, 60000); //queue for next ping in the next predefined interval
+        });
+    }
+
+    query_bot(bot);
 })();
 
 Date.prototype.format = function(mask, utc) {
