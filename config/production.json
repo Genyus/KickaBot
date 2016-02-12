@@ -9,6 +9,9 @@
         },
         "botanio": {
             "token": "rbwny4vfUOd0Ti:AAwiBpQJ7vEOtdka0"
+        },
+        "loggly": {
+            "stream": "production"
         }
     }
 }

@@ -92,9 +92,10 @@ var utils = require('./lib/utils');
         var promise = bot.getMe();//throw_error();
 
         promise.then(function (data) {
+            utils.log('Pinged ' + data.username);
             setTimeout (function() { query_bot(bot); }, 60000); //queue for next ping in the next predefined interval
         }, function (err) {
-            console.error(err);
+            utils.log(err);
             bot = start_bot();
             setTimeout (function() { query_bot(bot); }, 60000); //queue for next ping in the next predefined interval
         });

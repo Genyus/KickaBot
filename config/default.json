@@ -10,6 +10,11 @@
         },
         "botanio": {
             "token": "M1W7jDWUoVTj2bTp33pR0T_8ErwerwV:"
+        },
+        "loggly": {
+            "token": "b77c322a-31a3-4626-a1b0-a7b1e2b4d115",
+            "subdomain": "ingenyus",
+            "stream": "development"
         }
     }
 }
