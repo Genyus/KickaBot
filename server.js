@@ -92,13 +92,14 @@ var logger = require('./lib/logger');
     function query_bot (bot){
         logger.debug('Bot is ' + typeof bot);
         var promise = bot.getMe();//throw_error();
+        var timeout = 60000;
 
         promise.then(function (data) {
-            setTimeout (function() { query_bot(bot); }, 60000); //queue for next ping in the next predefined interval
+            setTimeout (function() { query_bot(bot); }, timeout); //queue for next ping in the next predefined interval
         }, function (err) {
             logger.warn(err);
             bot = start_bot();
-            setTimeout (function() { query_bot(bot); }, 60000); //queue for next ping in the next predefined interval
+            setTimeout (function() { query_bot(bot); }, timeout); //queue for next ping in the next predefined interval
         });
     }
 
