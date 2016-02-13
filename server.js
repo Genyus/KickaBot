@@ -12,6 +12,7 @@ var util = require('util');
 // Custom modules
 var Chat = require('./lib/chat');
 var utils = require('./lib/utils');
+var logger = require('./lib/logger');
 
 (function() {
     var telegramConfig = config.get('Server.telegram');
@@ -31,7 +32,7 @@ var utils = require('./lib/utils');
             return;
         }
 
-        utils.log(message);
+        logger.info(message);
 
         // Append the current message if not another command
         if (message.text && message.text.lastIndexOf('/', 0) !== 0) {
@@ -59,7 +60,7 @@ var utils = require('./lib/utils');
                 bot.start();
             })
             .on('error', function(message) {
-                utils.log('ERROR: ' + message);
+                logger.warn('ERROR: ' + message);
             })
             .on('fixtures', function(message, args) {
                 chat.initCommand(message, args, 'fixtures');
@@ -89,13 +90,13 @@ var utils = require('./lib/utils');
     }
 
     function query_bot (bot){
+        logger.debug('Bot is ' + typeof bot);
         var promise = bot.getMe();//throw_error();
 
         promise.then(function (data) {
-            utils.log('Pinged ' + data.username);
             setTimeout (function() { query_bot(bot); }, 60000); //queue for next ping in the next predefined interval
         }, function (err) {
-            utils.log(err);
+            logger.warn(err);
             bot = start_bot();
             setTimeout (function() { query_bot(bot); }, 60000); //queue for next ping in the next predefined interval
         });
