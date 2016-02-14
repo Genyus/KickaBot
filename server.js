@@ -90,11 +90,12 @@ var logger = require('./lib/logger');
     }
 
     function query_bot (bot){
-        logger.debug('Bot is ' + typeof bot);
         var promise = bot.getMe();//throw_error();
         var timeout = 60000;
 
+        logger.debug('Promise is ' + typeof promise);
         promise.then(function (data) {
+            logger.debug('Pinged ' + data.username);
             setTimeout (function() { query_bot(bot); }, timeout); //queue for next ping in the next predefined interval
         }, function (err) {
             logger.warn(err);
