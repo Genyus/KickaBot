@@ -90,16 +90,16 @@ var logger = require('./lib/logger');
     }
 
     function query_bot (bot){
-        logger.debug({'msg': util.inspect(bot, { showHidden: true, depth: 1 })});
+        logger.debug(util.inspect(bot, { showHidden: true, depth: 1 }));
         var promise = bot.getMe();//throw_error();
         var timeout = 60000;
 
-        logger.debug({'msg': util.inspect(promise, { showHidden: false, depth: 2 })});
+        logger.debug(util.inspect(promise, { showHidden: false, depth: 1 }));
         promise.then(function (data) {
-            logger.debug({'msg': util.inspect(promise, { showHidden: false, depth: 2 })});
+            logger.debug(util.inspect(promise, { showHidden: false, depth: 1 }));
             setTimeout (function() { query_bot(bot); }, timeout); //queue for next ping in the next predefined interval
         }, function (err) {
-            logger.debug({'msg': util.inspect(promise, { showHidden: false, depth: 2 })});
+            logger.debug(util.inspect(promise, { showHidden: false, depth: 1 }));
             logger.warn(err);
             bot = start_bot();
             setTimeout (function() { query_bot(bot); }, timeout); //queue for next ping in the next predefined interval
