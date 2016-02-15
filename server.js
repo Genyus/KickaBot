@@ -90,14 +90,16 @@ var logger = require('./lib/logger');
     }
 
     function query_bot (bot){
+        logger.debug(util.inspect(bot, { showHidden: true, depth: 1 }));
         var promise = bot.getMe();//throw_error();
         var timeout = 60000;
 
-        logger.debug('Promise is ' + typeof promise);
+        logger.debug(util.inspect(promise, { showHidden: false, depth: 2 }));
         promise.then(function (data) {
-            logger.debug('Pinged ' + data.username);
+            logger.debug(util.inspect(promise, { showHidden: false, depth: 2 }));
             setTimeout (function() { query_bot(bot); }, timeout); //queue for next ping in the next predefined interval
         }, function (err) {
+            logger.debug(util.inspect(promise, { showHidden: false, depth: 2 }));
             logger.warn(err);
             bot = start_bot();
             setTimeout (function() { query_bot(bot); }, timeout); //queue for next ping in the next predefined interval
