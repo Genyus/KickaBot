@@ -5,8 +5,8 @@
   "private": true,
   "main": "server.js",
   "dependencies": {
-    "bunyan": "^1.6.0",
-    "bunyan-loggly": "^1.0.0",
+    "bunyan": "~1.8.0",
+    "bunyan-loggly": "~1.4.0",
     "cache-manager": "^1.2.2",
     "config": "^1.17.1",
     "dateformat": "^1.0.12",
