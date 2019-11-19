@@ -9,13 +9,22 @@
     "bunyan-loggly": "~1.4.0",
     "cache-manager": "^1.2.2",
     "config": "^1.17.1",
-    "dateformat": "^1.0.12",
+    "dateformat": "~3.0",
     "lodash": "~4.17.0",
-    "node-telegram-bot": "^0.1.9",
+    "node-telegram-bot-api": "^0.40.0",
     "q": "^1.4.1"
   },
   "devDependencies": {
-    "forever": "^0.15.1"
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.6.0",
+    "eslint-config-semistandard": "^15.0.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "forever": "~1.0",
+    "semistandard": "~14.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -26,5 +35,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/Genyus/KickaBot.git"
+  },
+  "semistandard": {
+    "parser": "babel-eslint"
   }
 }
